@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css"/>
+	 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+   
+    <script>
+    function signUp()
+    {
+    var myusername = $("#accountId").val();
+    
+    if(!myusername){
+    	$("#errorMsg").html("Account Id cannot be empty");
+  	  $("#errorMsg").show();
+    }else{
+    	$("#errorMsg").hide();
+    
+    
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:8080/account/"+myusername,
+      data: myusername,
+      cache: false,
+      success: function(data){
+    	  console.log("success");
+    	  $("#succesMsg").html(data.description);
+    	  $("#succesMsg").show();
+      },
+      error:function(data){
+    	  console.log("error"+data);
+    	  $("#errorMsg").html("Error occured in creating account");
+    	  $("#errorMsg").show();
+      }
+    
+    });
+    }
+    }
+    
+    
+    function shorten()
+    {
+    var url = $("#url").val();
+    
+    if(!url){
+    	$("#errorShortUrl").html("Url cannot be empty");
+  	  $("#errorShortUrl").show();
+    }else{
+    	$("#errorShortUrl").hide();
+    
+    	 var req={};
+    	 req.url=url;
+    	 //req.redirectionType='302';
+    
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:8080/url/shorten/"+302,
+      data:req,
+      cache: false,
+      success: function(data){
+    	  console.log("success");
+    	// var html="Shortened URL is <b>"+data.shortUrl+'</b>'
+    	  $("#shortURL").html(data.shortUrl);
+    	  $("#succeshShortUrl").show();
+      },
+      error:function(data){
+    	  console.log("error"+data);
+    	  $("#errorShortUrl").html("Error occured in shortening the url");
+    	  $("#errorShortUrl").show();
+      }
+    
+    });
+    }
+    }
+    
+   /*  $(document).ready(function() {
+        $("#shortURL").click(function(event) {
+        	var url = $("#shortURL").html().trim();
+            
+            if(!url){
+            	$("#errorShortUrl").html("Cannot redirect empty url");
+          	  $("#errorShortUrl").show();
+            }else{
+            	$("#errorShortUrl").hide();
+            	 //req.redirectionType='302';
+            	 var req={};
+            	 req.id=url;
+            
+            $.ajax({
+              type: "GET",
+              useDefaultXhrHeader: false,
+              //dataType: 'jsonp',
+              url: "http://localhost:8080/url/redirect/",
+              data:req,
+              cache: false,
+              success: function(data){
+            	//  console.log("success");
+            	// var html="Shortened URL is <b>"+data.shortUrl+'</b>'
+            	 // $("#shortURL").html(data.shortUrl);
+            	 // $("#succeshShortUrl").show();
+              },
+              error:function(data){
+            	//  console.log("error"+data);
+            	//  $("#errorShortUrl").html("Error occured in shortening the url");
+            	 // $("#errorShortUrl").show();
+              }
+            
+            });
+            }
+        });
+  
+    }); */
+    
+    
+    
+    
+    </script>
+</head>
+<body>
+<header class="navbar navbar-static-top bs-docs-nav" id="top" role="banner">
+    <div class="container">
+        <div class="navbar-header">
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div>
+</header>
+<div class="jumbotron">
+  <div class="container">
+  <h1>URL Shortener</h1>
+    <p>
+    
+    <form class="form-inline">
+     
+      <div class="form-group">
+        <input type="text" class="form-control" id="url" name="url"
+           placeholder="http://www.example.com"/>
+      </div>
+       
+      <button type="button" onclick="shorten()" class="btn btn-primary">Shorten</button>
+      <div class="clearfix"></div>
+      <div id="succeshShortUrl" class="col-md-4 alert alert-success" style="display:none;">short url is<p style="" id="shortURL" name="shortURL"></p></div>
+      <div id="errorShortUrl" class="col-md-4 alert alert-danger" style="display:none;"></div>
+    </form> 
+    
+     
+    
+    
+    
+    
+    </p>
+  </div>
+</div>
+
+<div>
+    <form  id="login" method="POST">
+      <div class="form-group col-md-4">
+        <input type="text" class="form-control" id="username" name="username"
+           placeholder="Enter account Id"/>
+         
+         <input type="password" class="form-control" id="password" name="password"
+           placeholder="Enter your password"/>
+         
+      </div>
+      <button type="button" onclick="login()" class="btn btn-primary">Login</button>
+      <div class="clearfix"></div>
+      <div id="succesMsglogin" class="col-md-4 alert alert-success" style="display:none;"></div>
+      <div id="errorMsgLogin" class="col-md-4 alert alert-danger" style="display:none;"></div>
+    </form>
+ 
+
+</div>
+
+
+
+<div>
+    <form  id="register" method="POST">
+      <div class="form-group col-md-4">
+        <input type="text" class="form-control" id="accountId" name="accountId"
+           placeholder="Enter account Id"/>
+      </div>
+      <button type="button" onclick="signUp()" class="btn btn-primary">Sign up</button>
+      <div class="clearfix"></div>
+      <div id="succesMsg" class="col-md-4 alert alert-success" style="display:none;"></div>
+      <div id="errorMsg" class="col-md-4 alert alert-danger" style="display:none;"></div>
+    </form>
+ 
+
+</div>
+
+</body>
+</html>
