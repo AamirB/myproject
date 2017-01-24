@@ -15,6 +15,9 @@ public class UrlServiceImpl implements UrlService {
 	@Autowired
 	private IUrlStoreService urlStoreService;
 
+	@Autowired
+	private AccountService registrationService;
+
 	// TODO Externalize
 	private static final String serverUrl = "http://localhost:8080/";
 
@@ -24,7 +27,12 @@ public class UrlServiceImpl implements UrlService {
 		ShortUrlResponse res = new ShortUrlResponse();
 
 		try {
-			// TODO set the account to list f URLINFO maapping
+			// check if its already shortend
+
+			if (urlStoreService.alreadyShortened(url) != null) {
+				return res;
+			}
+
 			final String id = Hashing.murmur3_32()
 					.hashString(url, StandardCharsets.UTF_8).toString();
 			UrlInfo urlInfo = urlStoreService.findUrlById(id);
@@ -32,15 +40,14 @@ public class UrlServiceImpl implements UrlService {
 				urlInfo = new UrlInfo();
 				urlInfo.setCount(1);
 				urlInfo.setUrl(url);
+				urlInfo.setAccountId(registrationService.getLoggedInuser());
 				urlStoreService.storeUrl(id, urlInfo);
-			} else {
+			} else if (urlInfo.getAccountId() != null) {
 				urlInfo.setCount(urlInfo.getCount() + 1);
 			}
-
 			StringBuilder sb = new StringBuilder();
 			String urlFinal = sb.append(serverUrl).append("url/").append(id)
 					.toString();
-			urlStoreService.storeUrl(urlFinal, urlInfo);
 			res.setShortUrl(urlFinal);
 
 		} catch (Exception ex) {

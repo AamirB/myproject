@@ -1,12 +1,21 @@
 package com.yourl.service;
 
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.yourl.dto.AccountCreateResponse;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -15,6 +24,8 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	public PassWordGeneratorService passWordGeneratorService;
+
+	private Map<String, String> currentSession = new HashMap<String, String>();
 
 	@Override
 	public String findUserById(String id) {
@@ -34,7 +45,8 @@ public class AccountServiceImpl implements AccountService {
 		if (findUserById(id) == null) {
 			String passwrd = passWordGeneratorService.getSaltString();
 			storeUserPwdAndId(id, passwrd);
-			res.setDescription("Successfully created account with password " + passwrd);
+			res.setDescription(
+					"Successfully created account with password " + passwrd);
 			res.setSuccess(true);
 			res.setPassword(passwrd);
 
@@ -55,6 +67,50 @@ public class AccountServiceImpl implements AccountService {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean authenticateUser(String accountId, String password,
+			HttpServletRequest request, HttpServletResponse response) {
+
+		if (authenticateUser(accountId, password)) {
+			try {
+				String jwt = Jwts.builder().setSubject("users/TzMUocMF4p")
+						.claim("username", accountId)
+						.signWith(SignatureAlgorithm.HS256,
+								"secret".getBytes("UTF-8"))
+						.compact();
+				Cookie cookie = new Cookie("token", jwt);
+				cookie.setMaxAge(60 * 60 * 24 * 365);
+				response.setContentType("text/html");
+				cookie.setPath("/");
+				response.addCookie(cookie);
+				setLoggedInuser(accountId);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void setLoggedInuser(String accountId) {
+		currentSession.put("user", accountId);
+
+	}
+
+	@Override
+	public String getLoggedInuser() {
+		return currentSession.get("user");
+
+	}
+
+	@Override
+	public void logoutUser(HttpServletRequest request,
+			HttpServletResponse response) {
+		currentSession.remove("user");
+
 	}
 
 }

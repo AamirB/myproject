@@ -15,8 +15,7 @@ import com.yourl.service.AccountService;
 @RequestMapping("/account")
 public class AccountController {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(AccountController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AccountController.class);
 
 	@Autowired
 	private AccountService registrationService;
@@ -24,19 +23,11 @@ public class AccountController {
 	@RequestMapping(value = "/{accountId}", method = RequestMethod.POST)
 	public AccountCreateResponse register(@PathVariable String accountId) {
 		LOG.info("Request to create user with accountId:{0}", accountId);
-
-		// Principal p;
-
 		try {
 			return registrationService.createAccount(accountId);
-
 		} catch (Exception e) {
 			LOG.error("Error while creating account: {}", e.getMessage(), e);
-			throw new RuntimeException(e.getMessage() != null
-					? e.getMessage()
-					: "Error in creating account");
+			throw new RuntimeException(e.getMessage() != null ? e.getMessage() : "Error in creating account");
 		}
-
 	}
-
 }

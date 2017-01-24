@@ -11,20 +11,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		// registry.addViewController("/home").setViewName("home");
 		registry.addViewController("/").setViewName("shortener");
-		// registry.addViewController("/hello").setViewName("hello");
-		// registry.addViewController("/login").setViewName("login");
 	}
-
-	// @Bean
-	// public WebMvcConfigurer corsConfigurer() {
-	// return new WebMvcConfigurerAdapter() {
-	// @Override
-	// public void addCorsMappings(CorsRegistry registry) {
-	// registry.addMapping("/**");
-	// }
-	// };
-	// }
 
 }

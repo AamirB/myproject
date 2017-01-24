@@ -1,10 +1,9 @@
 package com.yourl.dto;
 
-public class UrlInfo {
+public class StatsURlInfo {
 
 	private String url;
 	private int count;
-	private String accountId;
 
 	public String getUrl() {
 		return url;
@@ -21,13 +20,4 @@ public class UrlInfo {
 	public void setCount(int count) {
 		this.count = count;
 	}
-
-	public String getAccountId() {
-		return accountId;
-	}
-
-	public void setAccountId(String accountId) {
-		this.accountId = accountId;
-	}
-
 }

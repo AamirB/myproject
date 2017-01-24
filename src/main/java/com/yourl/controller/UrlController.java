@@ -2,21 +2,25 @@ package com.yourl.controller;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yourl.dto.ShortUrlResponse;
+import com.yourl.dto.StatsURlInfo;
 import com.yourl.dto.UrlInfo;
 import com.yourl.service.IUrlStoreService;
 import com.yourl.service.UrlService;
 
-//@CrossOrigin
+@Controller
 @RestController
 @RequestMapping("/url")
 public class UrlController {
@@ -27,30 +31,13 @@ public class UrlController {
 	@Autowired
 	private IUrlStoreService urlStoreService;
 
-	// @CrossOrigin("http://localhost:8080")
 	@RequestMapping(value = "/redirect", method = RequestMethod.GET)
 	public void redirectToUrl(String id, HttpServletResponse resp)
 			throws Exception {
 		final UrlInfo url = urlStoreService.findUrlById(id);
 		if (url != null) {
 			resp.addHeader("Location", url.getUrl().toString());
-			// resp.addHeader("Access-Control-Allow-Origin",
-			// "http://localhost:8080");
-			// resp.addHeader("Access-Control-Allow-Headers",
-			// "origin,content-type, accept, x-requested-with");
-			// resp.addHeader("Access-Control-Max-Age", "60000");
-			// resp.addHeader("Access-Control-Allow-Methods",
-			// "GET, POST,PUT,DELETE, OPTIONS");
-			// resp.addHeader("Access-Control-Allow-Origin",
-			// "http://localhost:8080/");
-			// resp.setHeader("Access-Control-Allow-Origin", "*");
-			// req.getHeader("origin"));
-			// System.out.println(req.getHeader("origin"));
 			resp.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-			// resp.sendRedirect("www.google.com");
-
-			// RedirectServlet r = new RedirectServlet();
-			// r.service(null, resp);
 		} else {
 			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
@@ -91,6 +78,20 @@ public class UrlController {
 			throw new RuntimeException(ex.getMessage() != null
 					? ex.getMessage()
 					: "Error occured in shortening the URL");
+		}
+
+	}
+
+	@RequestMapping(value = "/showStats", method = RequestMethod.GET)
+	public @ResponseBody List<StatsURlInfo> showStats() {
+
+		try {
+			return urlStoreService.findAllStats();
+
+		} catch (Exception ex) {
+			throw new RuntimeException(ex.getMessage() != null
+					? ex.getMessage()
+					: "Error occured in getting stats of the URL");
 		}
 
 	}

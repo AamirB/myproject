@@ -42,11 +42,119 @@
     }
     }
     
+    function login()
+    {
+    var myusername = $("#username").val();
+    var pwd=$("#password").val();
+    if(!myusername){
+    $("#errorMsg").html("Account Id cannot be empty");
+    $("#errorMsg").show();
+    }else if(!pwd){
+    $("#errorMsg").html("Password cannot be empty");
+    }else{
+    $("#errorMsg").hide();
+
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:8080/login/"+myusername+"/"+pwd,
+      data: myusername,
+      cache: false,
+      success: function(data){
+    	if(data==true){  
+      console.log("success");
+      $("#logoutform").show();
+      $("#loginform").hide();
+      $("#succesMsg").html(data.description);
+      $("#succesMsg").show();
+      $("#errorMsg").hide();
+      $("#showStats").show();
+    	}else{
+    		console.log("error"+data);
+    		$("#succesMsg").hide();
+    	      $("#errorMsg").html("Username or password does not match");
+    	      $("#errorMsg").show();
+    	      $("#logoutform").hide();
+    	      $("#loginform").show();
+    	      $("#showStats").hide();
+    	}
+      },
+      error:function(data){
+      console.log("error"+data);
+      $("#errorMsg").html("Error occured in creating account");
+      $("#errorMsg").show();
+      $("#logoutform").hide();
+      $("#loginform").show();
+      $("#showStats").hide();
+      }
+    });
+    }
+    }
+    
+    function logout()
+    {
+    $.ajax({
+      type: "GET",
+      url: "http://localhost:8080/login/logout",
+      cache: false,
+      success: function(data){
+      console.log("success");
+     // $("#succesMsglogout").html("Successfully log out.");
+    //  $("#succesMsglogout").show();
+      $("#logoutform").hide();
+      $("#loginform").show();
+      $("#showStats").hide();
+      },
+      error:function(data){
+      console.log("error"+data);
+      //$("#errorMsgLogout").html("Error occured in logged out");
+    //  $("#errorMsgLogout").show();
+      $("#logoutform").show();
+      $("#loginform").hide();
+      $("#showStats").show();
+      }
+    });
+    }
+    
+    function showStats(){
+    	
+    	  $.ajax({
+    	      type: "GET",
+    	      url: "http://localhost:8080/url/showStats/",
+    	      cache: false,
+    	      success: function(data){
+    	    	  console.log(data);
+    	    	// var html="Shortened URL is <b>"+data.shortUrl+'</b>'
+    	    	 // $("#shortURL").html(data.shortUrl);
+    	    	  $("#succeshShortUrl").hide();
+    	    	  $('#stats').html('<tr> <th style="width:90%">URL</th>  <th>Count</th> </tr>');
+    	    	  var trHTML = '';
+    	          $.each(data, function (i, item) {
+    	              trHTML += '<tr><td>' + item.url + '</td><td>' + item.count + '</td></tr>';
+    	          });
+    	          $('#stats').append(trHTML);
+    	    	  
+    	    	  
+    	    	  
+    	    	  
+    	      },
+    	      error:function(data){
+    	    	  console.log("error"+data);
+    	    	  $("#errorShowstats").html("Error occured in fetching the stats");
+    	    	  $("#errorShowstats").show();
+    	      }
+    	    
+    	    });
+    	
+    	
+    	
+    }
+    
+    
+    
     
     function shorten()
     {
     var url = $("#url").val();
-    
     if(!url){
     	$("#errorShortUrl").html("Url cannot be empty");
   	  $("#errorShortUrl").show();
@@ -138,6 +246,10 @@
   <h1>URL Shortener</h1>
     <p>
     
+    
+
+    
+    <div class="col-md-12">
     <form class="form-inline">
      
       <div class="form-group">
@@ -150,17 +262,35 @@
       <div id="succeshShortUrl" class="col-md-4 alert alert-success" style="display:none;">short url is<p style="" id="shortURL" name="shortURL"></p></div>
       <div id="errorShortUrl" class="col-md-4 alert alert-danger" style="display:none;"></div>
     </form> 
-    
+    </div>
      
+    <div class="col-md-12">
+    <div id="showStats" style="display:none;">
+ <div id="logout" style="margin-top:20px;"><button type="button" onclick="showStats()" class="btn btn-primary">Show Stats</button></div>
+ <div id="showStats" class="col-md-4 alert alert-success" style="display:none;"></div>
+      <div id="errorShowstats" class="col-md-4 alert alert-danger" style="display:none;"></div>
+      </div>
+    </div>
     
+    <div>
+    <div class="clearifx"></div>
+    <div class="clearifx"></div>
+    <div class="clearifx"></div>
+    <table id="stats" style="width:100%" class=".table-striped">
+  <tr>
+    <th style="width:90%">URL</th>
+    <th>Count</th> 
+  </tr>
+</table>
     
-    
+    </div>
     
     </p>
   </div>
 </div>
 
-<div>
+
+<div id="loginform" class="col-md-12">
     <form  id="login" method="POST">
       <div class="form-group col-md-4">
         <input type="text" class="form-control" id="username" name="username"
@@ -175,13 +305,14 @@
       <div id="succesMsglogin" class="col-md-4 alert alert-success" style="display:none;"></div>
       <div id="errorMsgLogin" class="col-md-4 alert alert-danger" style="display:none;"></div>
     </form>
- 
-
 </div>
 
-
-
-<div>
+<div id="logoutform" style="display:none;" class="col-md-12">
+<div id="logout" style="margin-top:20px;"><button type="button" onclick="logout()" class="btn btn-primary">Logout</button></div>
+ <div id="succesMsglogout" class="col-md-4 alert alert-success" style="display:none;"></div>
+      <div id="errorMsgLogout" class="col-md-4 alert alert-danger" style="display:none;"></div>
+      </div>
+<div id="registerform" class="col-md-12">
     <form  id="register" method="POST">
       <div class="form-group col-md-4">
         <input type="text" class="form-control" id="accountId" name="accountId"
@@ -192,8 +323,6 @@
       <div id="succesMsg" class="col-md-4 alert alert-success" style="display:none;"></div>
       <div id="errorMsg" class="col-md-4 alert alert-danger" style="display:none;"></div>
     </form>
- 
-
 </div>
 
 </body>
