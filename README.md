@@ -14,10 +14,15 @@ To run it using maven (http://maven.apache.org):
 Then navigate to http://localhost:8080/ in your browser.
 
 Use Case
+
 1.user will register and password will be given.
+
 2.Then he will login with that password.
-3.he will generate the shortened URL
+
+3.he will generate the shortened URL.Shortened URL can be used to redirect original URL.By pasting in the tab bars.
+
 4.He can see the stats by clicking on stats.(stats for user will be captured only when the user is logged in)
+
 5.user can logout
 
 Doubt
