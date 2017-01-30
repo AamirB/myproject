@@ -68,7 +68,7 @@ public class MemUrlStoreService implements IUrlStoreService {
 			UrlInfo user = e1.getValue();
 			if (loggedInUser.equals(user.getAccountId())
 					&& url.equals(user.getUrl())) {
-				user.setCount(user.getCount() + 1);
+				user.setCount(user.getCount());
 
 				StringBuilder sb = new StringBuilder();
 				String urlFinal = sb.append(serverUrl).append("url/")

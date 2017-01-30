@@ -24,17 +24,19 @@ public class UrlServiceImpl implements UrlService {
 	@Override
 	public ShortUrlResponse shortenUrl(String url, String redirectionType) {
 
-		ShortUrlResponse res = new ShortUrlResponse();
+		ShortUrlResponse res = null;
 
 		try {
 			// check if its already shortend
-
-			if (urlStoreService.alreadyShortened(url) != null) {
+			res = urlStoreService.alreadyShortened(url);
+			if (res != null) {
 				return res;
 			}
-
+			res = new ShortUrlResponse();
 			final String id = Hashing.murmur3_32()
-					.hashString(url, StandardCharsets.UTF_8).toString();
+					.hashString(url + registrationService.getLoggedInuser(),
+							StandardCharsets.UTF_8)
+					.toString();
 			UrlInfo urlInfo = urlStoreService.findUrlById(id);
 			if (urlInfo == null) {
 				urlInfo = new UrlInfo();

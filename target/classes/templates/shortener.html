@@ -11,6 +11,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
    
     <script>
+    
+    var token="";
+    
     function signUp()
     {
     var myusername = $("#accountId").val();
@@ -53,12 +56,17 @@
     $("#errorMsg").html("Password cannot be empty");
     }else{
     $("#errorMsg").hide();
+    
+    token=window.btoa(unescape(encodeURIComponent(myusername + ':' + pwd)));
 
     $.ajax({
       type: "POST",
       url: "http://localhost:8080/login/"+myusername+"/"+pwd,
       data: myusername,
       cache: false,
+      beforeSend: function(xhr) {
+    	    xhr.setRequestHeader('Authorization', 'Basic ' + token);
+    	  },
       success: function(data){
     	if(data==true){  
       console.log("success");
@@ -96,8 +104,13 @@
       type: "GET",
       url: "http://localhost:8080/login/logout",
       cache: false,
+      beforeSend: function(xhr) {
+  	    xhr.setRequestHeader('Authorization', 'Basic ' + token);
+  	  },
       success: function(data){
+    	  $('#stats').html("");
       console.log("success");
+      token="";
      // $("#succesMsglogout").html("Successfully log out.");
     //  $("#succesMsglogout").show();
       $("#logoutform").hide();
@@ -121,6 +134,9 @@
     	      type: "GET",
     	      url: "http://localhost:8080/url/showStats/",
     	      cache: false,
+    	      beforeSend: function(xhr) {
+    	    	    xhr.setRequestHeader('Authorization', 'Basic ' + token);
+    	    	  },
     	      success: function(data){
     	    	  console.log(data);
     	    	// var html="Shortened URL is <b>"+data.shortUrl+'</b>'
@@ -170,8 +186,12 @@
       url: "http://localhost:8080/url/shorten/"+302,
       data:req,
       cache: false,
+      beforeSend: function(xhr) {
+  	    xhr.setRequestHeader('Authorization', 'Basic ' + token);
+  	  },
       success: function(data){
     	  console.log("success");
+    	  $('#url').val('');
     	// var html="Shortened URL is <b>"+data.shortUrl+'</b>'
     	  $("#shortURL").html(data.shortUrl);
     	  $("#succeshShortUrl").show();

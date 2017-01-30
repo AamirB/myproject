@@ -1,8 +1,11 @@
 package com.yourl.service;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.Cookie;
@@ -92,6 +95,33 @@ public class AccountServiceImpl implements AccountService {
 			return true;
 		}
 		return false;
+	}
+	@Override
+	public boolean authenticate(String authCredentials) {
+
+		if (null == authCredentials)
+			return false;
+		// header value format will be "Basic encodedstring" for Basic
+		// authentication. Example "Basic YWRtaW46YWRtaW4="
+		final String encodedUserPassword = authCredentials
+				.replaceFirst("Basic" + " ", "");
+		String usernameAndPassword = null;
+		try {
+			byte[] decodedBytes = Base64.getDecoder()
+					.decode(encodedUserPassword);
+			usernameAndPassword = new String(decodedBytes, "UTF-8");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		final StringTokenizer tokenizer = new StringTokenizer(
+				usernameAndPassword, ":");
+		final String username = tokenizer.nextToken();
+		final String password = tokenizer.nextToken();
+
+		// we have fixed the userid and password as admin
+		// call some UserService/LDAP here
+		boolean authenticationStatus = authenticateUser(username, password);
+		return authenticationStatus;
 	}
 
 	@Override

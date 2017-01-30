@@ -14,12 +14,14 @@ public interface AccountService {
 
 	boolean authenticateUser(String userId, String password);
 
-	boolean authenticateUser(String accountId, String password, HttpServletRequest request,
-			HttpServletResponse response);
+	boolean authenticateUser(String accountId, String password,
+			HttpServletRequest request, HttpServletResponse response);
 
 	void setLoggedInuser(String accountId);
 
 	void logoutUser(HttpServletRequest request, HttpServletResponse response);
 
 	String getLoggedInuser();
+
+	boolean authenticate(String authCredentials);
 }
